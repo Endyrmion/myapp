@@ -88,3 +88,26 @@ checkboxes = widgets.HBox(
 
 ui = widgets.VBox([checkboxes, generate_btn, loading_label, output])
 display(ui)
+
+
+
+
+        display(tabs)
+        loading_label.value = ""
+        generate_btn.disabled = False
+
+        # ⏱️ Auto-refresh after WAIT_SECONDS
+        WAIT_SECONDS = 1200
+
+        def auto_refresh():
+            time.sleep(WAIT_SECONDS)
+            with output:
+                clear_output()
+                loading_label.value = "🔁 Auto-refreshing dashboards..."
+                generate_btn.disabled = True
+                time.sleep(0.2)
+                on_generate_clicked(None)  # re-run with same selections
+
+        threading.Thread(target=auto_refresh).start()
+
+
