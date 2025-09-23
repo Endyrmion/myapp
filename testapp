@@ -2,21 +2,18 @@ import ipywidgets as widgets
 from IPython.display import display, clear_output
 import time
 
-# ⬅️ Make sure obj, W, and S are defined before running this
+# Checkboxes with tighter layout
+gbi_chk = widgets.Checkbox(value=False, description='GBI', layout=widgets.Layout(width='80px'))
+sef_chk = widgets.Checkbox(value=False, description='SEF', layout=widgets.Layout(width='80px'))
+wbf_chk = widgets.Checkbox(value=False, description='WBF', layout=widgets.Layout(width='80px'))
+wmf_chk = widgets.Checkbox(value=False, description='WMF', layout=widgets.Layout(width='80px'))
+ucits_chk = widgets.Checkbox(value=False, description='UCITS', layout=widgets.Layout(width='80px'))
 
-# Create checkbox for each dashboard
-gbi_chk = widgets.Checkbox(value=False, description='GBI')
-sef_chk = widgets.Checkbox(value=False, description='SEF')
-wbf_chk = widgets.Checkbox(value=False, description='WBF')
-wmf_chk = widgets.Checkbox(value=False, description='WMF')
-ucits_chk = widgets.Checkbox(value=False, description='UCITS')
-
-# Generate button and output area
-generate_btn = widgets.Button(description="Generate", button_style='primary')
+# Button styled in grey (secondary)
+generate_btn = widgets.Button(description="Generate", button_style='secondary')  # grey button
 loading_label = widgets.Label(value="")
 output = widgets.Output()
 
-# Function to load selected dashboards
 def on_generate_clicked(b):
     with output:
         clear_output()
@@ -72,7 +69,6 @@ def on_generate_clicked(b):
         if 'UCITS' in selected:
             tab_contents.append(('UCITS', W.create_test_page(S.style.text)))
 
-        # Display tabbed results
         tabs = widgets.Tab()
         tabs.children = [tab for (_, tab) in tab_contents]
         for i, (name, _) in enumerate(tab_contents):
@@ -82,10 +78,13 @@ def on_generate_clicked(b):
         loading_label.value = ""
         generate_btn.disabled = False
 
-# Bind button
 generate_btn.on_click(on_generate_clicked)
 
-# Show UI
-checkboxes = widgets.HBox([gbi_chk, sef_chk, wbf_chk, wmf_chk, ucits_chk])
+# Align checkboxes horizontally with no gap
+checkboxes = widgets.HBox(
+    [gbi_chk, sef_chk, wbf_chk, wmf_chk, ucits_chk],
+    layout=widgets.Layout(gap='0px')
+)
+
 ui = widgets.VBox([checkboxes, generate_btn, loading_label, output])
 display(ui)
