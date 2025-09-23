@@ -1,69 +1,65 @@
-import ipywidgets as widgets
-from IPython.display import display, clear_output
-import time
+def build_dashboard_ui(obj, W, style):
+    import ipywidgets as widgets
+    from IPython.display import display, clear_output
+    import time
 
-# Define dashboard names and options
-dash_options = ['GBI', 'SEF', 'WBF', 'WMF', 'UCITS']
-dash_selector = widgets.SelectMultiple(
-    options=dash_options,
-    description='Dashboards',
-    layout=widgets.Layout(width='200px'),
-    style={'description_width': 'initial'}
-)
+    dash_options = ['GBI', 'SEF', 'WBF', 'WMF', 'UCITS']
+    dash_selector = widgets.SelectMultiple(
+        options=dash_options,
+        description='Dashboards',
+        layout=widgets.Layout(width='200px'),
+        style={'description_width': 'initial'}
+    )
 
-# Button + output
-generate_btn = widgets.Button(description="Generate", button_style='primary')
-loading_label = widgets.Label(value="")
-output = widgets.Output()
+    generate_btn = widgets.Button(description="Generate", button_style='primary')
+    loading_label = widgets.Label(value="")
+    output = widgets.Output()
 
-# Main function to handle loading
-def on_generate_clicked(b):
-    with output:
-        clear_output()
-        selected = list(dash_selector.value)
-        if not selected:
-            print("Please select at least one dashboard.")
-            return
-        
-        generate_btn.disabled = True
-        loading_label.value = "⏳ Loading selected dashboards..."
+    def on_generate_clicked(b):
+        with output:
+            clear_output()
+            selected = list(dash_selector.value)
+            if not selected:
+                print("Please select at least one dashboard.")
+                return
 
-        time.sleep(0.2)
-        tab_contents = []
+            generate_btn.disabled = True
+            loading_label.value = "⏳ Loading selected dashboards..."
+            time.sleep(0.2)
 
-        if 'GBI' in selected:
-            GBI = W.create_dashboard(obj.GBI_Fund, obj.GBI_Equity_Totals, obj.GBI_Rules, obj.GBI_NAV, obj.GBI_Sector, obj.GBI_SUM_Cash, obj.GBI_Time, obj.GBI_Index, obj.GBI_Returns, 0)
-            tab_contents.append(('GBI Fund', GBI))
+            tab_contents = []
 
-        if 'SEF' in selected:
-            SEF = W.create_dashboard(obj.SEN_Fund, obj.SEN_Equity_Totals, obj.SEN_Rules, obj.SEN_NAV, obj.SEN_Sector, obj.SEN_SUM_Cash, obj.SEN_Time, obj.SEN_Index, obj.SEN_Returns, 0)
-            tab_contents.append(('SEF Fund', SEF))
+            if 'GBI' in selected:
+                GBI = W.create_dashboard(obj.GBI_Fund, obj.GBI_Equity_Totals, obj.GBI_Rules, obj.GBI_NAV, obj.GBI_Sector, obj.GBI_SUM_Cash, obj.GBI_Time, obj.GBI_Index, obj.GBI_Returns, 0)
+                tab_contents.append(('GBI Fund', GBI))
 
-        if 'WBF' in selected:
-            WBF = W.create_dashboard(obj.WBF_Fund, obj.WBF_Equity_Totals, obj.WBF_Rules, obj.WBF_NAV, obj.WBF_Sector, obj.WBF_SUM_Cash, obj.WBF_Time, obj.WBF_Index, obj.WBF_Situs, 0)
-            tab_contents.append(('WBF Fund', WBF))
+            if 'SEF' in selected:
+                SEF = W.create_dashboard(obj.SEN_Fund, obj.SEN_Equity_Totals, obj.SEN_Rules, obj.SEN_NAV, obj.SEN_Sector, obj.SEN_SUM_Cash, obj.SEN_Time, obj.SEN_Index, obj.SEN_Returns, 0)
+                tab_contents.append(('SEF Fund', SEF))
 
-        if 'WMF' in selected:
-            WMF = W.create_dashboard(obj.WMF_Fund, obj.WMF_Equity_Totals, obj.WMF_Rules, obj.WMF_NAV, obj.WMF_Sector, obj.WMF_SUM_Cash, obj.WMF_Time, obj.WMF_Index, obj.WMF_Situs, 0)
-            tab_contents.append(('WMF Fund', WMF))
+            if 'WBF' in selected:
+                WBF = W.create_dashboard(obj.WBF_Fund, obj.WBF_Equity_Totals, obj.WBF_Rules, obj.WBF_NAV, obj.WBF_Sector, obj.WBF_SUM_Cash, obj.WBF_Time, obj.WBF_Index, obj.WBF_Situs, 0)
+                tab_contents.append(('WBF Fund', WBF))
 
-        if 'UCITS' in selected:
-            UCITS_Text = W.create_test_page(S.style.text)
-            tab_contents.append(('UCITS', UCITS_Text))
+            if 'WMF' in selected:
+                WMF = W.create_dashboard(obj.WMF_Fund, obj.WMF_Equity_Totals, obj.WMF_Rules, obj.WMF_NAV, obj.WMF_Sector, obj.WMF_SUM_Cash, obj.WMF_Time, obj.WMF_Index, obj.WMF_Situs, 0)
+                tab_contents.append(('WMF Fund', WMF))
 
-        tabs = widgets.Tab()
-        children = [c for (_, c) in tab_contents]
-        tabs.children = children
+            if 'UCITS' in selected:
+                UCITS_Text = W.create_test_page(style.text)
+                tab_contents.append(('UCITS', UCITS_Text))
 
-        for i, (name, _) in enumerate(tab_contents):
-            tabs.set_title(i, name)
+            tabs = widgets.Tab()
+            children = [c for (_, c) in tab_contents]
+            tabs.children = children
 
-        display(tabs)
-        loading_label.value = ""
-        generate_btn.disabled = False
+            for i, (name, _) in enumerate(tab_contents):
+                tabs.set_title(i, name)
 
-# Bind
-generate_btn.on_click(on_generate_clicked)
+            display(tabs)
+            loading_label.value = ""
+            generate_btn.disabled = False
 
-# Show UI
-display(widgets.VBox([dash_selector, generate_btn, loading_label, output]))
+    generate_btn.on_click(on_generate_clicked)
+
+    display(widgets.VBox([dash_selector, generate_btn, loading_label, output]))
