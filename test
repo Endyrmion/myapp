@@ -1,0 +1,61 @@
+import os
+import re
+import shutil
+from datetime import datetime, timedelta
+
+def process_file(filename, source_path, destination_dir):
+    """
+    Processes a file containing a date in YYYYMMDD format:
+    - Extracts the date from the filename
+    - Converts it to YYYY-MM-DD
+    - Copies the file to a new location with updated filename (next day)
+    - Replaces all occurrences of the original date (YYYY-MM-DD) in the file content with the next day
+    """
+    
+    # Step 1: Extract date from filename using regex (finds 8-digit date like 20251025)
+    date_match = re.search(r'(\d{8})', filename)
+    if not date_match:
+        raise ValueError("No 8-digit date (YYYYMMDD) found in filename")
+    
+    original_date_str = date_match.group(1)  # e.g., '20251025'
+    
+    # Step 2: Convert to datetime object
+    original_date = datetime.strptime(original_date_str, '%Y%m%d')
+    
+    # Step 3: Calculate next day
+    next_date = original_date + timedelta(days=1)
+    
+    # Step 4: Format dates as YYYY-MM-DD
+    original_formatted = original_date.strftime('%Y-%m-%d')  # '2025-10-25'
+    next_formatted = next_date.strftime('%Y-%m-%d')          # '2025-10-26'
+    
+    # Step 5: Define file paths
+    source_file = os.path.join(source_path, filename)
+    if not os.path.exists(source_file):
+        raise FileNotFoundError(f"File not found: {source_file}")
+    
+    # Create new filename by replacing original date with next day
+    new_filename = filename.replace(original_date_str, next_date.strftime('%Y%m%d'))
+    destination_file = os.path.join(destination_dir, new_filename)
+    
+    # Ensure destination directory exists
+    os.makedirs(destination_dir, exist_ok=True)
+    
+    # Step 6: Read, modify content, and write to new file
+    with open(source_file, 'r', encoding='utf-8') as f:
+        content = f.read()
+    
+    # Replace all occurrences of 'YYYY-MM-DD' with next day
+    updated_content = content.replace(original_formatted, next_formatted)
+    
+    with open(destination_file, 'w', encoding='utf-8') as f:
+        f.write(updated_content)
+    
+    print(f"Processed: {filename} -> {new_filename}")
+    print(f"   Date changed: {original_formatted} -> {next_formatted}")
+    print(f"   Saved to: {destination_file}")
+    
+    return destination_file
+
+# Example usage:
+# process_file("report_20251025_data.txt", "/path/to/source", "/path/to/destination")
