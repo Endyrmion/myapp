@@ -1,3 +1,10 @@
+import os
+
+def get_files_with_string(folder, string):
+    return [f for f in os.listdir(folder) if string in f and os.path.isfile(os.path.join(folder, f))]
+
+
+
 import ipywidgets as widgets
 from IPython.display import display, clear_output
 import time
